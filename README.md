@@ -44,6 +44,8 @@ A comprehensive FastAPI-based service that analyzes news articles using three di
 ### Prerequisites
 - Python 3.8 or higher
 - pip or pip3
+- Node.js 14 or higher (for frontend)
+- npm (comes with Node.js)
 
 ### Step 1: Clone or Navigate to Project Directory
 ```bash
@@ -65,7 +67,7 @@ pip install -r requirements.txt
 
 ## 🚀 Usage
 
-### Starting the Server
+### Starting the Backend Server
 
 ```bash
 # Activate virtual environment (if not already activated)
@@ -81,6 +83,23 @@ uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
 The server will start on `http://localhost:8000`
+
+### Starting the Frontend
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies (first time only)
+npm install
+
+# Start the development server
+npm start
+```
+
+The frontend will start on `http://localhost:3000` and automatically open in your browser.
+
+**Note**: Make sure the backend server is running before using the frontend, as it needs to connect to the API at `http://localhost:8000`.
 
 ### API Endpoints
 
