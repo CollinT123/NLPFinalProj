@@ -35,7 +35,7 @@ venv.bak/
 *.pt
 
 # Model files and directories
-Models/
+Models/distilbert-imdb-financial-3class
 *.safetensors
 *.bin
 *.onnx
