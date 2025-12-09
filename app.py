@@ -58,7 +58,7 @@ async def lifespan(app: FastAPI):
     global distilbert_model, distilbert_tokenizer, entity_overlap_model, fake_news_pipeline
     
     # Load DistilBERT model
-    model_path = "Models/distilbert-imdb-financial-3class"
+    model_path = "Models\\distilbert-imdb-financial-3class"
     print(f"Loading DistilBERT model from {model_path}...")
     distilbert_tokenizer = AutoTokenizer.from_pretrained(model_path)
     distilbert_model = AutoModelForSequenceClassification.from_pretrained(model_path).to(device)
@@ -95,6 +95,8 @@ class NewsResponse(BaseModel):
     distilbert_sentiment: dict
     entity_overlap: dict
     fake_news_detection: dict
+    final_ensemble: dict
+
 
 @app.get("/")
 def root():
@@ -172,10 +174,46 @@ def predict(request: NewsRequest):
             "result": "This is a good heading" if label == "LABEL_1" else "This is a misleading heading"
         }
         
+        # 4. ENSEMBLE FINAL PREDICTION (Added Section)
+        
+        # DistilBERT probability (convert difference_squared → 0–1)
+        distilbert_prob = float(1 / (1 + np.exp(-difference_squared)))
+
+        # Entity model probability (already 0–1)
+        entity_prob = float(pred_score)
+
+        # Fake news probability (LABEL_0 = misleading)
+        fake_prob = float(score if label != "LABEL_1" else 1 - score)
+
+        # Weighted ensemble
+        final_score = (
+            0.3 * distilbert_prob +
+            0.4 * entity_prob +
+            0.3 * fake_prob
+        )
+
+        final_prediction = "Misleading" if final_score >= 0.5 else "Not Misleading"
+
+        ensemble_result = {
+            "final_score": float(final_score),
+            "final_prediction": final_prediction,
+            "individual_scores": {
+                "distilbert_prob": distilbert_prob,
+                "entity_prob": entity_prob,
+                "fake_prob": fake_prob
+            }
+        }
+        print( distilbert_result,
+            entity_result,
+            fake_news_result,
+            ensemble_result)
+
+
         return NewsResponse(
             distilbert_sentiment=distilbert_result,
             entity_overlap=entity_result,
-            fake_news_detection=fake_news_result
+            fake_news_detection=fake_news_result,
+            final_ensemble=ensemble_result
         )
     
     except Exception as e:
