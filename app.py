@@ -43,7 +43,11 @@ def get_sentiment_score(text: str, max_length: int = 512):
     p_neg = probs[0].item()
     p_neu = probs[1].item()
     p_pos = probs[2].item()
-    score = p_pos - p_neg  # in [-1, 1]
+    
+    # Square p_neg and p_pos using square_keep_negative before computing score
+    p_neg_squared = square_keep_negative(p_neg)
+    p_pos_squared = square_keep_negative(p_pos)
+    score = p_pos_squared - p_neg_squared  # in [-1, 1]
 
     return {
         "p_neg": p_neg,
@@ -116,22 +120,18 @@ def predict(request: NewsRequest):
         article_sentiment = get_sentiment_score(request.article)
         
         # Square the scores (only for DistilBERT)
-        headline_squared = square_keep_negative(headline_sentiment["score"])
-        article_squared = square_keep_negative(article_sentiment["score"])
+       
         difference = headline_sentiment["score"] - article_sentiment["score"]
-        difference_squared = headline_squared - article_squared
+        
         
         distilbert_result = {
             "headline": {
                 **headline_sentiment,
-                "squared_score": headline_squared
             },
             "article": {
                 **article_sentiment,
-                "squared_score": article_squared
             },
             "difference": difference,
-            "difference_squared": difference_squared
         }
         
         # 2. Entity Overlap Model
