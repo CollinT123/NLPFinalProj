@@ -62,7 +62,7 @@ async def lifespan(app: FastAPI):
     global distilbert_model, distilbert_tokenizer, entity_overlap_model, fake_news_pipeline
     
     # Load DistilBERT model
-    model_path = "Models\\distilbert-imdb-financial-3class"
+    model_path = "Models/distilbert-imdb-financial-3class"
     print(f"Loading DistilBERT model from {model_path}...")
     distilbert_tokenizer = AutoTokenizer.from_pretrained(model_path)
     distilbert_model = AutoModelForSequenceClassification.from_pretrained(model_path).to(device)
@@ -176,8 +176,8 @@ def predict(request: NewsRequest):
         
         # 4. ENSEMBLE FINAL PREDICTION (Added Section)
         
-        # DistilBERT probability (convert difference_squared → 0–1)
-        distilbert_prob = float(1 / (1 + np.exp(-difference_squared)))
+        # DistilBERT probability (convert difference → 0–1)
+        distilbert_prob = float(1 / (1 + np.exp(-difference)))
 
         # Entity model probability (already 0–1)
         entity_prob = float(pred_score)

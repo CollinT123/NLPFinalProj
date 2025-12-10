@@ -16,10 +16,9 @@ const apiClient = axios.create({
 
 interface AnalysisResult {
   distilbert_sentiment: {
-    headline: { p_neg: number; p_neu: number; p_pos: number; score: number; squared_score: number };
-    article: { p_neg: number; p_neu: number; p_pos: number; score: number; squared_score: number };
+    headline: { p_neg: number; p_neu: number; p_pos: number; score: number };
+    article: { p_neg: number; p_neu: number; p_pos: number; score: number };
     difference: number;
-    difference_squared: number;
   };
   entity_overlap: {
     score: number;
@@ -107,8 +106,8 @@ function App() {
     {/* 1. DistilBERT */}
     <div style={{ marginTop: "1rem", padding: "1rem", background: "#f5f5f5", borderRadius: "8px" }}>
       <h4>1. DistilBERT Sentiment Analysis</h4>
-      <p><strong>Headline:</strong> Score: {result.distilbert_sentiment.headline.score.toFixed(3)} (Squared: {result.distilbert_sentiment.headline.squared_score.toFixed(3)})</p>
-      <p><strong>Article:</strong> Score: {result.distilbert_sentiment.article.score.toFixed(3)} (Squared: {result.distilbert_sentiment.article.squared_score.toFixed(3)})</p>
+                <p><strong>Headline:</strong> Score: {result.distilbert_sentiment.headline.score.toFixed(3)}</p>
+                <p><strong>Article:</strong> Score: {result.distilbert_sentiment.article.score.toFixed(3)}</p>
       <p><strong>Difference:</strong> {result.distilbert_sentiment.difference.toFixed(3)}</p>
     </div>
 

@@ -34,12 +34,13 @@ def test_api(test_case, index):
             distilbert = result['distilbert_sentiment']
             entity = result['entity_overlap']
             fake_news = result['fake_news_detection']
+            final_ensemble = result.get('final_ensemble', {})
             
             print(f"\n✅ Request successful ({elapsed_time:.2f}s)")
             print(f"\nResults:")
             print(f"  DistilBERT Sentiment:")
-            print(f"    Headline: {distilbert['headline']['score']:.3f} (squared: {distilbert['headline']['squared_score']:.3f})")
-            print(f"    Article: {distilbert['article']['score']:.3f} (squared: {distilbert['article']['squared_score']:.3f})")
+            print(f"    Headline: {distilbert['headline']['score']:.3f}")
+            print(f"    Article: {distilbert['article']['score']:.3f}")
             print(f"    Difference: {distilbert['difference']:.3f}")
             
             print(f"\n  Entity Overlap:")
@@ -57,16 +58,29 @@ def test_api(test_case, index):
             entity_says_misleading = entity['prediction'] == 'Misleading'
             fake_news_says_misleading = 'misleading' in fake_news['result'].lower()
             
+            # DistilBERT: Large difference suggests misleading (threshold: |difference| > 0.5)
+            distilbert_difference = abs(distilbert['difference'])
+            distilbert_says_misleading = distilbert_difference > 0.5
+            
+            # Final Ensemble prediction
+            ensemble_says_misleading = final_ensemble.get('final_prediction', '') == 'Misleading' if final_ensemble else False
+            
             print(f"\n  Expected: {'MISLEADING' if expected_misleading else 'NOT MISLEADING'}")
+            print(f"  DistilBERT Model: {'MISLEADING' if distilbert_says_misleading else 'NOT MISLEADING'} (diff: {distilbert_difference:.3f})")
             print(f"  Entity Model: {'MISLEADING' if entity_says_misleading else 'NOT MISLEADING'}")
             print(f"  Fake News Model: {'MISLEADING' if fake_news_says_misleading else 'NOT MISLEADING'}")
+            if final_ensemble:
+                print(f"  Final Ensemble: {final_ensemble.get('final_prediction', 'N/A')} (score: {final_ensemble.get('final_score', 0):.3f})")
             
             return {
                 'success': True,
                 'test_case': test_case['name'],
                 'category': test_case['category'],
-                'entity_prediction': entity['prediction'],
-                'fake_news_result': fake_news['result'],
+                'expected_misleading': expected_misleading,
+                'distilbert_prediction': distilbert_says_misleading,
+                'entity_prediction': entity_says_misleading,
+                'fake_news_prediction': fake_news_says_misleading,
+                'ensemble_prediction': ensemble_says_misleading,
                 'elapsed_time': elapsed_time
             }
         else:
@@ -135,12 +149,33 @@ def run_all_tests():
         avg_time = sum(r['elapsed_time'] for r in successful) / len(successful)
         print(f"Average response time: {avg_time:.2f}s")
         
+        # Calculate accuracy for each model
+        distilbert_correct = sum(1 for r in successful if r.get('distilbert_prediction') == r.get('expected_misleading'))
+        entity_correct = sum(1 for r in successful if r.get('entity_prediction') == r.get('expected_misleading'))
+        fake_news_correct = sum(1 for r in successful if r.get('fake_news_prediction') == r.get('expected_misleading'))
+        ensemble_correct = sum(1 for r in successful if r.get('ensemble_prediction') == r.get('expected_misleading'))
+        
+        distilbert_accuracy = (distilbert_correct / len(successful)) * 100
+        entity_accuracy = (entity_correct / len(successful)) * 100
+        fake_news_accuracy = (fake_news_correct / len(successful)) * 100
+        ensemble_accuracy = (ensemble_correct / len(successful)) * 100
+        
+        print(f"\n{'='*80}")
+        print("MODEL ACCURACY")
+        print(f"{'='*80}")
+        print(f"DistilBERT Sentiment Model: {distilbert_correct}/{len(successful)} = {distilbert_accuracy:.2f}%")
+        print(f"Entity Overlap Model: {entity_correct}/{len(successful)} = {entity_accuracy:.2f}%")
+        print(f"Fake News Detection Model: {fake_news_correct}/{len(successful)} = {fake_news_accuracy:.2f}%")
+        print(f"Final Weighted Ensemble: {ensemble_correct}/{len(successful)} = {ensemble_accuracy:.2f}%")
+        print(f"{'='*80}")
+        
         # Category breakdown
         misleading_tests = [r for r in successful if r.get('category') == 'misleading']
         non_misleading_tests = [r for r in successful if r.get('category') == 'non-misleading']
         
-        print(f"\nMisleading test cases: {len(misleading_tests)}")
-        print(f"Non-misleading test cases: {len(non_misleading_tests)}")
+        print(f"\nTest case breakdown:")
+        print(f"  Misleading test cases: {len(misleading_tests)}")
+        print(f"  Non-misleading test cases: {len(non_misleading_tests)}")
     
     if failed:
         print(f"\nFailed tests:")
