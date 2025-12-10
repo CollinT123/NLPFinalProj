@@ -16,9 +16,10 @@ const apiClient = axios.create({
 
 interface AnalysisResult {
   distilbert_sentiment: {
-    headline: { p_neg: number; p_neu: number; p_pos: number; score: number };
-    article: { p_neg: number; p_neu: number; p_pos: number; score: number };
+    headline: { p_neg: number; p_neu: number; p_pos: number; score: number; squared_score: number };
+    article: { p_neg: number; p_neu: number; p_pos: number; score: number; squared_score: number };
     difference: number;
+    difference_squared: number;
   };
   entity_overlap: {
     score: number;
@@ -36,7 +37,18 @@ interface AnalysisResult {
     score: number;
     result: string;
   };
+
+  final_ensemble: {
+    final_score: number;
+    final_prediction: string;
+    individual_scores: {
+      distilbert_prob: number;
+      entity_prob: number;
+      fake_prob: number;
+    };
+  };
 }
+
 
 function App() {
   const [isAnalyze, setAnalyze] = useState<boolean>(false)
@@ -88,32 +100,50 @@ function App() {
             isLoading={isAnalyze}
           />
           {error && <p style={{color: 'red', marginTop: '1rem'}}>Error: {error}</p>}
-          {result && (
-            <div style={{marginTop: '2rem'}}>
-              <h3 className={styles.resultLabel}>Results</h3>
-              
-              <div style={{marginTop: '1rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px'}}>
-                <h4>1. DistilBERT Sentiment Analysis</h4>
-                <p><strong>Headline:</strong> Score: {result.distilbert_sentiment.headline.score.toFixed(3)}</p>
-                <p><strong>Article:</strong> Score: {result.distilbert_sentiment.article.score.toFixed(3)}</p>
-                <p><strong>Difference:</strong> {result.distilbert_sentiment.difference.toFixed(3)}</p>
-              </div>
+        {result && (
+  <div style={{ marginTop: "2rem" }}>
+    <h3 className={styles.resultLabel}>Results</h3>
 
-              <div style={{marginTop: '1rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px'}}>
-                <h4>2. Entity Overlap Model</h4>
-                <p><strong>Prediction:</strong> {result.entity_overlap.prediction}</p>
-                <p><strong>Confidence Score:</strong> {result.entity_overlap.score.toFixed(3)}</p>
-                <p><strong>Token Overlap:</strong> {result.entity_overlap.features.token_overlap.toFixed(3)}</p>
-                <p><strong>Entity Overlap:</strong> {result.entity_overlap.features.entity_overlap.toFixed(3)}</p>
-              </div>
+    {/* 1. DistilBERT */}
+    <div style={{ marginTop: "1rem", padding: "1rem", background: "#f5f5f5", borderRadius: "8px" }}>
+      <h4>1. DistilBERT Sentiment Analysis</h4>
+      <p><strong>Headline:</strong> Score: {result.distilbert_sentiment.headline.score.toFixed(3)} (Squared: {result.distilbert_sentiment.headline.squared_score.toFixed(3)})</p>
+      <p><strong>Article:</strong> Score: {result.distilbert_sentiment.article.score.toFixed(3)} (Squared: {result.distilbert_sentiment.article.squared_score.toFixed(3)})</p>
+      <p><strong>Difference:</strong> {result.distilbert_sentiment.difference.toFixed(3)}</p>
+    </div>
 
-              <div style={{marginTop: '1rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px'}}>
-                <h4>3. Fake News Detection</h4>
-                <p><strong>Result:</strong> {result.fake_news_detection.result}</p>
-                <p><strong>Confidence:</strong> {result.fake_news_detection.score.toFixed(3)}</p>
-              </div>
-            </div>
-          )}
+    {/* 2. Entity Overlap */}
+    <div style={{ marginTop: "1rem", padding: "1rem", background: "#f5f5f5", borderRadius: "8px" }}>
+      <h4>2. Entity Overlap Model</h4>
+      <p><strong>Prediction:</strong> {result.entity_overlap.prediction}</p>
+      <p><strong>Confidence Score:</strong> {result.entity_overlap.score.toFixed(3)}</p>
+      <p><strong>Token Overlap:</strong> {result.entity_overlap.features.token_overlap.toFixed(3)}</p>
+      <p><strong>Entity Overlap:</strong> {result.entity_overlap.features.entity_overlap.toFixed(3)}</p>
+    </div>
+
+    {/* 3. Fake News */}
+    <div style={{ marginTop: "1rem", padding: "1rem", background: "#f5f5f5", borderRadius: "8px" }}>
+      <h4>3. Fake News Detection</h4>
+      <p><strong>Result:</strong> {result.fake_news_detection.result}</p>
+      <p><strong>Confidence:</strong> {result.fake_news_detection.score.toFixed(3)}</p>
+    </div>
+
+    {/* 4. Ensemble */}
+    <div style={{ marginTop: "1rem", padding: "1rem", background: "#e8f7ff", borderRadius: "8px" }}>
+      <h4>4. Final Ensemble Prediction</h4>
+
+      <p><strong>Final Prediction:</strong> {result.final_ensemble?.final_prediction}</p>
+      <p><strong>Final Score:</strong> {result.final_ensemble?.final_score?.toFixed(3)}</p>
+
+      <h5 style={{ marginTop: "0.5rem" }}>Individual Model Contributions</h5>
+
+      <p><strong>DistilBERT Probability:</strong> {result.final_ensemble?.individual_scores?.distilbert_prob?.toFixed(3)}</p>
+      <p><strong>Entity Model Probability:</strong> {result.final_ensemble?.individual_scores?.entity_prob?.toFixed(3)}</p>
+      <p><strong>Fake News Probability:</strong> {result.final_ensemble?.individual_scores?.fake_prob?.toFixed(3)}</p>
+    </div>
+  </div>
+)}
+
         </form>
       </div>
     </div>
