@@ -43,7 +43,7 @@ A comprehensive FastAPI-based service that analyzes news articles using three di
   - Number of entities in article
 - **Output**: Binary classification (Misleading / Not Misleading) with confidence score
 
-### 3. Fake News Detection
+### 3. Semantic Model
 
 - **Model**: `willphan1712/fake_news_detection` from HuggingFace
 - **Purpose**: Classifies whether a headline is misleading or legitimate
