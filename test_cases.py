@@ -47,7 +47,8 @@ test_cases = [
         "headline": "Tech CEO Predicts Economic Collapse",
         "article": "At a technology conference, a panel discussion covered various economic topics. One participant, a startup founder, shared personal opinions about market trends during an informal Q&A session. The comments were not part of any official statement or company position."
     },
-    
+
+   #TEST CASE
     {
         "name": "Misleading - Headline Doesn't Match Content",
         "category": "misleading",
@@ -77,7 +78,8 @@ test_cases = [
         "headline": "Study Links Regular Exercise to Improved Mental Health",
         "article": "A comprehensive study published in the Journal of Health Psychology found that individuals who engage in at least 150 minutes of moderate exercise per week report significantly better mental health outcomes. The study surveyed over 10,000 participants across different age groups. Researchers observed reduced anxiety and depression symptoms in the active group compared to sedentary participants."
     },
-    
+
+    # Use for Testing
     {
         "name": "Accurate - Economic Report",
         "category": "non-misleading",
@@ -142,7 +144,9 @@ test_cases = [
         "headline": "Market Up",
         "article": "The stock market closed higher today, with the Dow Jones Industrial Average gaining 150 points. Technology stocks led the gains, with major tech companies seeing increases of 2-3%. Analysts attribute the positive movement to strong quarterly earnings reports and optimistic economic forecasts."
     },
-    
+
+
+    #test with this
     {
         "name": "Edge Case - Very Long Headline",
         "category": "edge_case",

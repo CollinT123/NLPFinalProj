@@ -116,8 +116,6 @@ function App() {
       <h4>2. Entity Overlap Model</h4>
       <p><strong>Prediction:</strong> {result.entity_overlap.prediction}</p>
       <p><strong>Confidence Score:</strong> {result.entity_overlap.score.toFixed(3)}</p>
-      <p><strong>Token Overlap:</strong> {result.entity_overlap.features.token_overlap.toFixed(3)}</p>
-      <p><strong>Entity Overlap:</strong> {result.entity_overlap.features.entity_overlap.toFixed(3)}</p>
     </div>
 
     {/* 3. Fake News */}

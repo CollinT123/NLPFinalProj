@@ -63,7 +63,25 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**Note**: The first run will download the fake news detection model from HuggingFace, which may take a few minutes.
+### Step 4: Download DistilBERT Model
+The DistilBERT sentiment model must be downloaded from Google Drive:
+
+1. Download the model from: [https://drive.google.com/file/d/1XHYGo2QLjPG10TEHTwpibA8G7Shd3Ms8/view](https://drive.google.com/file/d/1XHYGo2QLjPG10TEHTwpibA8G7Shd3Ms8/view)
+2. Extract the downloaded file
+3. Place the extracted folder in the `Models/` directory
+4. Ensure the folder is named `distilbert-imdb-financial-3class`
+
+The final structure should be:
+```
+Models/
+  └── distilbert-imdb-financial-3class/
+      ├── config.json
+      ├── model.safetensors
+      ├── tokenizer.json
+      └── ...
+```
+
+**Note**: The fake news detection model will be automatically downloaded from HuggingFace on first run, which may take a few minutes.
 
 ## 🚀 Usage
 
