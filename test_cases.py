@@ -146,63 +146,7 @@ test_cases = [
     },
 
 
-    #test with this
-    {
-        "name": "Edge Case - Very Long Headline",
-        "category": "edge_case",
-        "headline": "Comprehensive Analysis Reveals Significant Changes in Consumer Behavior Patterns Following Recent Economic Policy Adjustments and Market Volatility",
-        "article": "A new study examines how consumers have adapted their spending habits. Researchers found that people are more cautious with discretionary spending."
-    },
-    
-    {
-        "name": "Edge Case - Neutral Sentiment",
-        "category": "edge_case",
-        "headline": "Quarterly Report Shows Stable Performance",
-        "article": "The company's quarterly financial report indicates stable performance across all divisions. Revenue remained consistent with previous quarters, and no significant changes were observed in market position or operational metrics."
-    },
-    
-    {
-        "name": "Edge Case - Headline and Article Match Exactly",
-        "category": "edge_case",
-        "headline": "City Council Meeting Scheduled for Next Tuesday",
-        "article": "City Council Meeting Scheduled for Next Tuesday. The meeting will cover budget proposals and infrastructure improvements."
-    }
+
 ]
 
-
-def print_test_case(test_case, index):
-    """Pretty print a test case"""
-    print(f"\n{'='*80}")
-    print(f"Test Case #{index + 1}: {test_case['name']}")
-    print(f"Category: {test_case['category'].upper()}")
-    print(f"{'='*80}")
-    print(f"Headline: {test_case['headline']}")
-    print(f"\nArticle: {test_case['article']}")
-    print(f"{'='*80}\n")
-
-
-def get_test_case_json(test_case):
-    """Return test case as JSON-serializable dict for API requests"""
-    return {
-        "headline": test_case["headline"],
-        "article": test_case["article"]
-    }
-
-
-if __name__ == "__main__":
-    print("="*80)
-    print("NEWS ANALYSIS API - TEST CASES")
-    print("="*80)
-    print(f"\nTotal test cases: {len(test_cases)}")
-    print(f"  - Misleading: {len([tc for tc in test_cases if tc['category'] == 'misleading'])}")
-    print(f"  - Non-misleading: {len([tc for tc in test_cases if tc['category'] == 'non-misleading'])}")
-    print(f"  - Edge cases: {len([tc for tc in test_cases if tc['category'] == 'edge_case'])}")
-    
-    # Print all test cases
-    for i, test_case in enumerate(test_cases):
-        print_test_case(test_case, i)
-    
-    print("\n" + "="*80)
-    print("To use these test cases with the API, import this module and use get_test_case_json()")
-    print("="*80)
 
